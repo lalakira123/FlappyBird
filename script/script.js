@@ -25,11 +25,11 @@ const planoDeFundo = {
         );
 
         contexto.drawImage(
-            sprites, //imagem
-            planoDeFundo.spriteX, planoDeFundo.spriteY, //Distância referente ao Source Image
-            planoDeFundo.largura, planoDeFundo.altura, //Tamanho do recorte na sprite
-            (planoDeFundo.x + planoDeFundo.largura), planoDeFundo.y, //Posiciona a imagem no canva
-            planoDeFundo.largura, planoDeFundo.altura //Tamanho da imagem dentro do canva
+            sprites, 
+            planoDeFundo.spriteX, planoDeFundo.spriteY, 
+            planoDeFundo.largura, planoDeFundo.altura, 
+            (planoDeFundo.x + planoDeFundo.largura), planoDeFundo.y, 
+            planoDeFundo.largura, planoDeFundo.altura 
         );
     }
 }
@@ -44,46 +44,70 @@ const chao = {
     y: canvas.height - 112,
     desenha() {
         contexto.drawImage(
-            sprites, //imagem
-            chao.spriteX, chao.spriteY, //Distância referente ao Source Image
-            chao.largura, chao.altura, //Tamanho do recorte na sprite
-            chao.x, chao.y, //Posiciona a imagem no canva
-            chao.largura, chao.altura //Tamanho da imagem dentro do can      
+            sprites,
+            chao.spriteX, chao.spriteY, 
+            chao.largura, chao.altura, 
+            chao.x, chao.y, 
+            chao.largura, chao.altura       
         );
 
         contexto.drawImage(
-            sprites, //imagem
-            chao.spriteX, chao.spriteY, //Distância referente ao Source Image
-            chao.largura, chao.altura, //Tamanho do recorte na sprite
-            (chao.x + chao.largura), chao.y, //Posiciona a imagem no canva
-            chao.largura, chao.altura //Tamanho da imagem dentro do can      
+            sprites, 
+            chao.spriteX, chao.spriteY, 
+            chao.largura, chao.altura, 
+            (chao.x + chao.largura), chao.y, 
+            chao.largura, chao.altura       
         );
     }
 }
 
-// [Flappy Bird]
-const flappyBird = {
-    spriteX: 0,
-    spriteY: 0,
-    largura: 33,
-    altura: 24,
-    x: 10,
-    y: 50,
-    gravidade: 0.25,
-    velocidade: 0,
-    atualiza() {
-        flappyBird.velocidade += flappyBird.gravidade 
-        flappyBird.y += flappyBird.velocidade
-    },
-    desenha() { // O próprio objeto irá chamar o desenho do Objeto
-        contexto.drawImage(
-            sprites, //imagem
-            flappyBird.spriteX, flappyBird.spriteY, //Distância referente ao Source Image
-            flappyBird.largura, flappyBird.altura, //Tamanho do recorte na sprite
-            flappyBird.x, flappyBird.y, //Posiciona a imagem no canva
-            flappyBird.largura, flappyBird.altura //Tamanho da imagem dentro do canva
-        );
+function colide(flappyBird, chao) {
+    const flappyBirdY = flappyBird.y + flappyBird.altura;
+    const chaoY = chao.y;
+    
+    if(flappyBirdY >= chaoY) {
+        return true;
     }
+
+    return false;
+}
+
+// [Flappy Bird]
+function criaFlappyBird() {
+    const flappyBird = {
+        spriteX: 0,
+        spriteY: 0,
+        largura: 33,
+        altura: 24,
+        x: 10,
+        y: 50,
+        pulo: 4.6,
+        pula() {
+            flappyBird.velocidade = - flappyBird.pulo
+        },
+        gravidade: 0.25,
+        velocidade: 0,
+        atualiza() {
+            if(colide(flappyBird, chao)) {
+                mudaDeTela(tela.inicio)
+                return;
+            }
+    
+            flappyBird.velocidade += flappyBird.gravidade 
+            flappyBird.y += flappyBird.velocidade
+        },
+        desenha() { 
+            contexto.drawImage(
+                sprites, 
+                flappyBird.spriteX, flappyBird.spriteY, 
+                flappyBird.largura, flappyBird.altura, 
+                flappyBird.x, flappyBird.y, 
+                flappyBird.largura, flappyBird.altura 
+            );
+        }
+    }
+
+    return flappyBird;
 }
 
 // [Começar o Game]
@@ -96,28 +120,36 @@ const telaReady = {
     y: 50,
     desenha() {
         contexto.drawImage(
-            sprites, //imagem
-            telaReady.spriteX, telaReady.spriteY, //Distância referente ao Source Image
-            telaReady.largura, telaReady.altura, //Tamanho do recorte na sprite
-            telaReady.x, telaReady.y, //Posiciona a imagem no canva
-            telaReady.largura, telaReady.altura //Tamanho da imagem dentro do can      
+            sprites, 
+            telaReady.spriteX, telaReady.spriteY, 
+            telaReady.largura, telaReady.altura, 
+            telaReady.x, telaReady.y, 
+            telaReady.largura, telaReady.altura    
         );
     }
 }
 
 // [Telas]
+const globais = {};
 let telaAtiva = {};
 
 function mudaDeTela(novaTela) {
     telaAtiva = novaTela;
+
+    if(telaAtiva.inicializa) {
+        telaAtiva.inicializa();
+    }
 }
 
 const tela = {
     inicio: {
+        inicializa() {
+            globais.flappyBird = criaFlappyBird();
+        },
         desenha() {
             planoDeFundo.desenha();
             chao.desenha();
-            flappyBird.desenha();
+            globais.flappyBird.desenha();
             telaReady.desenha()
         },
         click() {
@@ -127,15 +159,17 @@ const tela = {
 
         }
     },
-
     jogo: {
         desenha() {
             planoDeFundo.desenha();
             chao.desenha();
-            flappyBird.desenha();
+            globais.flappyBird.desenha();
+        },
+        click() {
+            globais.flappyBird.pula();
         },
         atualiza() {
-            flappyBird.atualiza();
+            globais.flappyBird.atualiza();
         }
     }
 }

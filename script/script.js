@@ -1,6 +1,12 @@
 const sprites = new Image();
 sprites.src = "./sprites/sprites.png";
 
+const efeitoSonoroBateu = new Audio();
+efeitoSonoroBateu.src = "./sound_effect/efeitos_hit.wav";
+
+const efeitoSonoroPulo = new Audio();
+efeitoSonoroPulo.src = "./sound_effect/efeitos_pulo.wav"
+
 const canvas = document.querySelector("canvas");
 const contexto = canvas.getContext("2d"); // Criação de um Objeto definindo a Bidimensionaldiade
 
@@ -89,7 +95,10 @@ function criaFlappyBird() {
         velocidade: 0,
         atualiza() {
             if(colide(flappyBird, chao)) {
-                mudaDeTela(tela.inicio)
+                efeitoSonoroBateu.play();
+                setTimeout(() => {
+                    mudaDeTela(tela.inicio);
+                },500);
                 return;
             }
     
@@ -166,6 +175,7 @@ const tela = {
             globais.flappyBird.desenha();
         },
         click() {
+            efeitoSonoroPulo.play();
             globais.flappyBird.pula();
         },
         atualiza() {

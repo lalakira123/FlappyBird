@@ -86,16 +86,75 @@ const flappyBird = {
     }
 }
 
+// [Começar o Game]
+const telaReady = {
+    spriteX: 134,
+    spriteY: 0,
+    largura: 174,
+    altura: 152,
+    x: (canvas.width/2) - 174/2,
+    y: 50,
+    desenha() {
+        contexto.drawImage(
+            sprites, //imagem
+            telaReady.spriteX, telaReady.spriteY, //Distância referente ao Source Image
+            telaReady.largura, telaReady.altura, //Tamanho do recorte na sprite
+            telaReady.x, telaReady.y, //Posiciona a imagem no canva
+            telaReady.largura, telaReady.altura //Tamanho da imagem dentro do can      
+        );
+    }
+}
+
+// [Telas]
+let telaAtiva = {};
+
+function mudaDeTela(novaTela) {
+    telaAtiva = novaTela;
+}
+
+const tela = {
+    inicio: {
+        desenha() {
+            planoDeFundo.desenha();
+            chao.desenha();
+            flappyBird.desenha();
+            telaReady.desenha()
+        },
+        click() {
+            mudaDeTela(tela.jogo);
+        },
+        atualiza() {
+
+        }
+    },
+
+    jogo: {
+        desenha() {
+            planoDeFundo.desenha();
+            chao.desenha();
+            flappyBird.desenha();
+        },
+        atualiza() {
+            flappyBird.atualiza();
+        }
+    }
+}
+
 // FPS 
 function loop() {
-    flappyBird.atualiza();
-    planoDeFundo.desenha();
-    chao.desenha();
-    flappyBird.desenha();
+    telaAtiva.desenha();
+    telaAtiva.atualiza();
 
     requestAnimationFrame(loop); //Desenha os quadros na tela
 }
 
+window.addEventListener("click", function() {
+    if (telaAtiva.click) {
+        telaAtiva.click();
+    }
+});
+
+mudaDeTela(tela.inicio)
 loop();
 
 

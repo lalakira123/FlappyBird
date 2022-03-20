@@ -1,4 +1,5 @@
 let frames = 0;
+let contador = 0;
 const sprites = new Image();
 sprites.src = "./sprites/sprites.png";
 
@@ -207,12 +208,18 @@ function criaCanos() {
                 const peDoFlappy = globais.flappyBird.y + globais.flappyBird.altura 
 
                 if(cabecaDoFlappy <= par.canoCeu.y) {
+                    contador = 0;
                     return true;
                 }
 
                 if(peDoFlappy >= par.canoChao.y) {
+                    contador = 0;
                     return true;
-                }
+                }             
+            } 
+
+            if(globais.flappyBird.x === par.x) {
+                contador++;
             }
         },
         pares: [],
@@ -262,6 +269,22 @@ const telaReady = {
     }
 }
 
+// [Placar]
+function criaPlacar() {
+    const placar = {
+        pontuacao: 0,
+        desenha() {
+            contexto.font = '55px "VT323"';
+            contexto.fillStyle = 'white';
+            contexto.fillText(`${placar.pontuacao}`, canvas.width/2 - 10, 100);
+        },
+        atualiza() {
+            placar.pontuacao = parseInt(contador);
+        }
+    }
+    return placar;
+}
+
 // [Telas]
 const globais = {};
 let telaAtiva = {};
@@ -295,11 +318,15 @@ const tela = {
         }
     },
     jogo: {
+        inicializa() {
+            globais.placar = criaPlacar();
+        },
         desenha() {
             planoDeFundo.desenha();
             globais.canos.desenha();
             globais.chao.desenha();
             globais.flappyBird.desenha();
+            globais.placar.desenha();
         },
         click() {
             efeitoSonoroPulo.play();
@@ -309,6 +336,7 @@ const tela = {
             globais.canos.atualiza();
             globais.flappyBird.atualiza();
             globais.chao.atualiza();
+            globais.placar.atualiza();
         }
     }
 }

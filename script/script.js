@@ -9,6 +9,9 @@ efeitoSonoroBateu.src = "./sound_effect/efeitos_hit.wav";
 const efeitoSonoroPulo = new Audio();
 efeitoSonoroPulo.src = "./sound_effect/efeitos_pulo.wav"
 
+const efeitoSonoroPonto = new Audio();
+efeitoSonoroPonto.src = "./sound_effect/efeitos_ponto.wav"
+
 const canvas = document.querySelector("canvas");
 const contexto = canvas.getContext("2d"); // Criação de um Objeto definindo a Bidimensionaldiade
 
@@ -219,6 +222,7 @@ function criaCanos() {
             } 
 
             if(globais.flappyBird.x === par.x) {
+                efeitoSonoroPonto.play();
                 contador++;
             }
         },
